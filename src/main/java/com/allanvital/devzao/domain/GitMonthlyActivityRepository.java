@@ -9,7 +9,7 @@ import java.util.List;
   */
 public interface GitMonthlyActivityRepository extends JpaRepository<GitMonthlyActivity, Long> {
 
-    List<GitMonthlyActivity> findByGitHubUser_IdOrderByYearMonthAsc(Long gitHubUserId);
+    List<GitMonthlyActivity> findByGitHubUser_IdOrderByActivityMonthAsc(Long gitHubUserId);
 
     void deleteByGitHubUser_Id(Long gitHubUserId);
 }

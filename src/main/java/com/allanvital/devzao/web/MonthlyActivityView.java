@@ -13,7 +13,7 @@ public record MonthlyActivityView(
         double percentage
 ) {
     public static MonthlyActivityView from(GitMonthlyActivity activity, int maxCount) {
-        return from(activity.getYearMonth(), activity.getCommitCount(), maxCount);
+        return from(activity.getActivityMonth(), activity.getCommitCount(), maxCount);
     }
 
     public static MonthlyActivityView from(String yearMonth, int commitCount, int maxCount) {

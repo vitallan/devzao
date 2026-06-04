@@ -283,12 +283,12 @@ public class UserController {
                 hourlyViews.add(HourlyActivityView.from(hour, count, maxHourly));
             }
 
-            List<GitMonthlyActivity> dbActivities = this.gitMonthlyActivityRepository.findByGitHubUser_IdOrderByYearMonthAsc(userId);
+            List<GitMonthlyActivity> dbActivities = this.gitMonthlyActivityRepository.findByGitHubUser_IdOrderByActivityMonthAsc(userId);
             int maxMonthly = dbActivities.stream().mapToInt(GitMonthlyActivity::getCommitCount).max().orElse(0);
 
             Map<String, Integer> countByMonth = new HashMap<>();
             for (GitMonthlyActivity a : dbActivities) {
-                countByMonth.put(a.getYearMonth(), a.getCommitCount());
+                countByMonth.put(a.getActivityMonth(), a.getCommitCount());
             }
 
             YearMonth now = YearMonth.now();

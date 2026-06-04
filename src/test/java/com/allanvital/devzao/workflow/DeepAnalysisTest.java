@@ -71,11 +71,11 @@ public class DeepAnalysisTest extends E2ETest {
         GitHubUser user = this.gitHubUserRepository.findByLoginLower(info.login()).orElseThrow();
         assertEquals(GitDeepAnalysisStatus.COMPLETED, user.getDeepAnalysisStatus());
 
-        List<GitMonthlyActivity> monthly = this.gitMonthlyActivityRepository.findByGitHubUser_IdOrderByYearMonthAsc(user.getId());
+        List<GitMonthlyActivity> monthly = this.gitMonthlyActivityRepository.findByGitHubUser_IdOrderByActivityMonthAsc(user.getId());
         assertEquals(4, monthly.size());
-        assertEquals("2026-01", monthly.get(0).getYearMonth());
+        assertEquals("2026-01", monthly.get(0).getActivityMonth());
         assertEquals(1, monthly.get(0).getCommitCount());
-        assertEquals("2026-02", monthly.get(1).getYearMonth());
+        assertEquals("2026-02", monthly.get(1).getActivityMonth());
         assertEquals(2, monthly.get(1).getCommitCount());
 
         List<GitHourlyActivity> hourly = this.gitHourlyActivityRepository.findByGitHubUser_IdOrderByHourAsc(user.getId());

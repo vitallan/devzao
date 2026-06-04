@@ -25,8 +25,8 @@ public class GitMonthlyActivity {
     @JoinColumn(name = "github_user_id", nullable = false)
     private GitHubUser gitHubUser;
 
-    @Column(name = "year_month", nullable = false, length = 7)
-    private String yearMonth;
+    @Column(name = "activity_month", nullable = false, length = 7)
+    private String activityMonth;
 
     @Column(name = "commit_count", nullable = false)
     private int commitCount;
@@ -34,9 +34,9 @@ public class GitMonthlyActivity {
     protected GitMonthlyActivity() {
     }
 
-    public GitMonthlyActivity(GitHubUser gitHubUser, String yearMonth, int commitCount) {
+    public GitMonthlyActivity(GitHubUser gitHubUser, String activityMonth, int commitCount) {
         this.gitHubUser = gitHubUser;
-        this.yearMonth = yearMonth;
+        this.activityMonth = activityMonth;
         this.commitCount = commitCount;
     }
 
@@ -48,8 +48,8 @@ public class GitMonthlyActivity {
         return this.gitHubUser;
     }
 
-    public String getYearMonth() {
-        return this.yearMonth;
+    public String getActivityMonth() {
+        return this.activityMonth;
     }
 
     public int getCommitCount() {

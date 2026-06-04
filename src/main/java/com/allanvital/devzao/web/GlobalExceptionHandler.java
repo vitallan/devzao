@@ -20,7 +20,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public String handleUnhandled(Exception e, HttpServletRequest request) {
-        log.error("Unhandled exception processing {} {}", request.getMethod(), request.getRequestURI(), e);
+        log.error("Unhandled exception processing {} {}: {}", request.getMethod(), request.getRequestURI(), e.getMessage());
+        log.debug("Full stack trace for unhandled exception", e);
         return "redirect:/?" + Constants.MESSAGE_PARAM + "="
                 + UriUtils.encodeQueryParam("An unexpected error occurred", StandardCharsets.UTF_8);
     }

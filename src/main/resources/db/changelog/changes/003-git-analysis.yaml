@@ -93,7 +93,7 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: year_month
+                  name: activity_month
                   type: VARCHAR(7)
                   constraints:
                     nullable: false
@@ -116,7 +116,7 @@ databaseChangeLog:
               - column:
                   name: github_user_id
               - column:
-                  name: year_month
+                  name: activity_month
 
   - changeSet:
       id: 003-create-git-hourly-activity
