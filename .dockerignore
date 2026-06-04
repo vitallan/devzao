@@ -1,0 +1,13 @@
+target/
+.git/
+.idea/
+.mvn/
+data/
+memory/
+DOCS/
+HELP.md
+AGENTS.md
+ARCHITECTURE.md
+*.iml
+.vscode/
+build/

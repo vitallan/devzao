@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="'Devzao - ' + ${login}">Devzao</title>
+    <link rel="stylesheet" href="/vendor/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/site.css"/>
+    <link rel="icon" type="image/png" sizes="96x96" href="/icon/favicon-96x96.png">
+    <link rel="icon" href="/icon/favicon.svg" type="image/svg+xml" sizes="any">
+    <link rel="icon" href="/icon/favicon.ico">
+    <link rel="apple-touch-icon" href="/icon/apple-touch-icon.png">
+    <link rel="manifest" href="/icon/site.webmanifest">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <th:block th:if="${umamiScriptUrl != null and !umamiScriptUrl.isEmpty() and umamiWebsiteId != null and !umamiWebsiteId.isEmpty()}">
+        <script defer="defer" th:src="${umamiScriptUrl}" th:attr="data-website-id=${umamiWebsiteId}"></script>
+    </th:block>
+</head>
+<body class="site-shell">
+<main class="site-container py-4 py-md-5">
+    <header class="site-header">
+        <a class="brand-mark" href="/">
+            <img class="brand-icon" src="/icon/favicon.svg" alt="" aria-hidden="true">
+            Devzao
+        </a>
+        <a class="btn btn-sm btn-outline-secondary rounded-pill px-3" href="/random">Random profile</a>
+        <a class="btn btn-sm btn-outline-dark rounded-pill px-3" href="/">Search another</a>
+    </header>
+
+    <article class="editorial-card profile-card">
+        <div class="profile-layout">
+            <div class="sidebar-avatar">
+                <img class="profile-avatar" th:if="${photoDataUrl != null}" th:src="${photoDataUrl}" th:alt="${name != null ? name + ' avatar' : 'User avatar'}" width="208" height="208"/>
+                <div class="profile-avatar avatar-placeholder" th:if="${photoDataUrl == null}">No image</div>
+            </div>
+
+            <section>
+                <p class="eyebrow mb-3">Profile</p>
+                <h1 class="profile-title mb-3"><a th:href="'https://github.com/' + ${login}" target="_blank" rel="noopener noreferrer" th:text="${login}">login</a></h1>
+                <p class="profile-name mb-3" th:text="${name}">name</p>
+                <p class="profile-subtitle mb-4" th:text="${bio}">bio</p>
+
+                <p class="fetched-at-meta mb-4" th:if="${fetchedAt != null}" th:text="'Updated ' + ${fetchedAt}">Updated date</p>
+
+                <th:block th:replace="~{fragments/repositories :: topRepositories}"></th:block>
+
+                <th:block th:replace="~{fragments/git-activity :: gitActivity}"></th:block>
+
+            </section>
+
+            <aside class="sidebar-charts">
+                <th:block th:replace="~{fragments/languages :: languageChart}"></th:block>
+                <th:block th:replace="~{fragments/repo-commits :: repoCommitChart}"></th:block>
+            </aside>
+        </div>
+    </article>
+
+    <script th:inline="javascript">
+        const repositoryLogin = /*[[${login}]]*/ "";
+        const repositoryPollEveryMs = 2000;
+
+        async function pollRepositories() {
+            const container = document.getElementById("repository-section");
+            if (!container) {
+                return;
+            }
+
+            const state = container.dataset.repositorySyncState;
+            if (state === "FETCHED" || state === "FAILED") {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/u/${encodeURIComponent(repositoryLogin)}/repositories`, {
+                    headers: { "Accept": "text/html" }
+                });
+                if (response.ok) {
+                    const html = await response.text();
+                    container.outerHTML = html;
+                }
+            } catch (e) {
+                // swallow and retry
+            }
+
+            setTimeout(pollRepositories, repositoryPollEveryMs);
+        }
+
+        async function pollLanguages() {
+            const container = document.getElementById("repository-languages");
+            if (!container) {
+                return;
+            }
+
+            const state = container.dataset.repositorySyncState;
+            if (state === "FETCHED" || state === "FAILED") {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/u/${encodeURIComponent(repositoryLogin)}/languages`, {
+                    headers: { "Accept": "text/html" }
+                });
+                if (response.ok) {
+                    const html = await response.text();
+                    container.outerHTML = html;
+                }
+            } catch (e) {
+                // swallow and retry
+            }
+
+            setTimeout(pollLanguages, repositoryPollEveryMs);
+        }
+
+        async function pollActivity() {
+            const container = document.getElementById("git-activity");
+            if (!container) {
+                return;
+            }
+
+            const state = container.dataset.deepAnalysisStatus;
+            if (state === "COMPLETED" || state === "FAILED") {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/u/${encodeURIComponent(repositoryLogin)}/activity`, {
+                    headers: { "Accept": "text/html" }
+                });
+                if (response.ok) {
+                    const html = await response.text();
+                    container.outerHTML = html;
+                }
+            } catch (e) {
+                // swallow and retry
+            }
+
+            setTimeout(pollActivity, repositoryPollEveryMs);
+        }
+
+        async function pollRepoCommits() {
+            const container = document.getElementById("repo-commits-chart");
+            if (!container) {
+                return;
+            }
+
+            const state = container.dataset.deepAnalysisStatus;
+            if (state === "COMPLETED" || state === "FAILED") {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/u/${encodeURIComponent(repositoryLogin)}/repo-commits`, {
+                    headers: { "Accept": "text/html" }
+                });
+                if (response.ok) {
+                    const html = await response.text();
+                    container.outerHTML = html;
+                }
+            } catch (e) {
+                // swallow and retry
+            }
+
+            setTimeout(pollRepoCommits, repositoryPollEveryMs);
+        }
+
+        setTimeout(pollRepositories, repositoryPollEveryMs);
+        setTimeout(pollLanguages, repositoryPollEveryMs);
+        setTimeout(pollActivity, repositoryPollEveryMs);
+        setTimeout(pollRepoCommits, repositoryPollEveryMs);
+    </script>
+</main>
+<footer class="site-footer">
+    <a href="https://github.com/vitallan/devzao" target="_blank" rel="noopener noreferrer">vitallan/devzao</a>
+    <span class="site-footer-note">All data is gathered from public sources on GitHub.</span><br>
+    By <a href="https://allanvital.com" target="_blank" rel="noopener noreferrer">Allan Vital</a>
+</footer>
+</body>
+</html>

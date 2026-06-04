@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="topRepositories" id="repository-section" th:attr="data-repository-sync-state=${repositorySyncState}">
+    <div class="row g-3 mb-2">
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-label mb-2">Followers</div>
+                <div class="stat-value" th:text="${followers}">0</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-label mb-2">Repositories</div>
+                <div class="stat-value" th:text="${totalRepositories}">0</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-label mb-2">Total stars</div>
+                <div class="stat-value" th:text="${totalStars}">0</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card">
+                <div class="stat-label mb-2">Total forks</div>
+                <div class="stat-value" th:text="${totalForks}">0</div>
+            </div>
+        </div>
+    </div>
+
+    <section class="repository-section mb-4">
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="section-title mb-0">Top starred repositories</h2>
+        <span class="field-label">GitHub</span>
+    </div>
+
+    <div class="repository-list" th:if="${!topRepositories.isEmpty()}">
+        <a class="repository-link" th:each="repository : ${topRepositories}" th:href="${repository.htmlUrl}" target="_blank" rel="noopener noreferrer">
+            <span class="repository-name-wrap">
+                <span class="language-swatch" th:if="${repository.language() != null}" th:style="'background:' + ${repository.languageColor()}"></span>
+                <span class="repository-name" th:text="${repository.name}">repository</span>
+            </span>
+            <span class="repository-stars">
+                <span class="repo-recency" th:if="${repository.pushedAtRelative() != null}">
+                    <span class="recency-dot" th:style="'background:' + ${repository.pushedAtCategoryColor()}"></span>
+                    <span class="recency-text" th:text="${repository.pushedAtRelative()}">ago</span>
+                </span>
+                <span th:text="${repository.stargazersCount}">0</span>
+                <span aria-hidden="true">stars</span>
+            </span>
+        </a>
+    </div>
+
+    <p class="repository-empty mb-0" th:if="${topRepositories.isEmpty() && repositorySyncState != 'FETCHED' && repositorySyncState != 'FAILED'}">
+        Repository highlights are being prepared.
+    </p>
+    <p class="repository-empty mb-0" th:if="${topRepositories.isEmpty() && repositorySyncState == 'FETCHED'}">
+        No public source repositories found.
+    </p>
+    <p class="repository-empty mb-0" th:if="${topRepositories.isEmpty() && repositorySyncState == 'FAILED'}">
+        Repository highlights could not be loaded right now.
+    </p>
+</section>
+</div>
+</body>
+</html>

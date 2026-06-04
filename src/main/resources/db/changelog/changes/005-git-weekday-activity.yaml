@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-git-weekday-activity
+      author: allanvital
+      changes:
+        - createTable:
+            tableName: git_weekday_activity
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: github_user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: day_of_week
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: commit_count
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: git_weekday_activity
+            baseColumnNames: github_user_id
+            referencedTableName: github_user
+            referencedColumnNames: id
+            constraintName: fk_weekday_user
+            onDelete: CASCADE

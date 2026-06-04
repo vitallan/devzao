@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/001-init.yaml
+  - include:
+      file: db/changelog/changes/002-github-repository.yaml
+  - include:
+      file: db/changelog/changes/003-git-analysis.yaml
+  - include:
+      file: db/changelog/changes/004-repo-commit-count.yaml
+  - include:
+      file: db/changelog/changes/005-git-weekday-activity.yaml

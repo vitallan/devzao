@@ -1,0 +1,164 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-add-deep-analysis-fields
+      author: allan.vital
+      changes:
+        - addColumn:
+            tableName: github_repository
+            columns:
+              - column:
+                  name: is_private
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003-add-deep-analysis-status
+      author: allan.vital
+      changes:
+        - addColumn:
+            tableName: github_user
+            columns:
+              - column:
+                  name: deep_analysis_status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 003-create-git-commit-analysis
+      author: allan.vital
+      changes:
+        - createTable:
+            tableName: git_commit_analysis
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: github_user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_commits
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: total_merge_commits
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: truncated
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: analyzed_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: git_commit_analysis
+            baseColumnNames: github_user_id
+            referencedTableName: github_user
+            referencedColumnNames: id
+            constraintName: fk_git_commit_analysis_user
+            onDelete: CASCADE
+
+  - changeSet:
+      id: 003-create-git-monthly-activity
+      author: allan.vital
+      changes:
+        - createTable:
+            tableName: git_monthly_activity
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: github_user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: year_month
+                  type: VARCHAR(7)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: commit_count
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: git_monthly_activity
+            baseColumnNames: github_user_id
+            referencedTableName: github_user
+            referencedColumnNames: id
+            constraintName: fk_git_monthly_activity_user
+            onDelete: CASCADE
+        - createIndex:
+            tableName: git_monthly_activity
+            indexName: idx_git_monthly_activity_user_month
+            columns:
+              - column:
+                  name: github_user_id
+              - column:
+                  name: year_month
+
+  - changeSet:
+      id: 003-create-git-hourly-activity
+      author: allan.vital
+      changes:
+        - createTable:
+            tableName: git_hourly_activity
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: github_user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: commit_hour
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: commit_count
+                  type: INT
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: git_hourly_activity
+            baseColumnNames: github_user_id
+            referencedTableName: github_user
+            referencedColumnNames: id
+            constraintName: fk_git_hourly_activity_user
+            onDelete: CASCADE
+        - createIndex:
+            tableName: git_hourly_activity
+            indexName: idx_git_hourly_activity_user_hour
+            columns:
+              - column:
+                  name: github_user_id
+              - column:
+                  name: commit_hour

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<section class="language-section" id="repo-commits-chart" th:fragment="repoCommitChart" th:attr="data-deep-analysis-status=${deepAnalysisStatus}">
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="section-title mb-0">Commits by repo</h2>
+        <span class="field-label">Commits</span>
+    </div>
+
+    <div th:if="${deepAnalysisStatus == 'COMPLETED' and repoCommitChart != null and !repoCommitChart.shares().isEmpty()}">
+        <div class="language-pie mx-auto mb-3" th:style="'background: ' + ${repoCommitChart.gradient()}"></div>
+        <div class="language-legend">
+            <div class="language-legend-row" th:each="share : ${repoCommitChart.shares()}">
+                <span class="language-swatch" th:style="'background: ' + ${share.color()}"></span>
+                <span class="language-name" th:text="${share.repoName()}">Repo</span>
+                <span class="language-count">
+                    <span th:text="${share.commitCount()}">0</span>
+                    <span th:text="${share.commitCount() == 1 ? 'commit' : 'commits'}">commits</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <p class="activity-empty mb-0" th:if="${deepAnalysisStatus == 'ANALYZING'}">
+        Commit analysis is in progress.
+    </p>
+    <p class="activity-empty mb-0" th:if="${deepAnalysisStatus == 'NOT_STARTED'}">
+        Commit analysis is pending.
+    </p>
+    <p class="activity-empty mb-0" th:if="${deepAnalysisStatus == 'FAILED'}">
+        Commit analysis could not be completed right now.
+    </p>
+</section>
+</body>
+</html>

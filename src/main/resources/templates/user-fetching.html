@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title th:text="'Devzao - ' + ${login}">Devzao</title>
+    <link rel="stylesheet" href="/vendor/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/site.css"/>
+    <link rel="icon" type="image/png" sizes="96x96" href="/icon/favicon-96x96.png">
+    <link rel="icon" href="/icon/favicon.svg" type="image/svg+xml" sizes="any">
+    <link rel="icon" href="/icon/favicon.ico">
+    <link rel="apple-touch-icon" href="/icon/apple-touch-icon.png">
+    <link rel="manifest" href="/icon/site.webmanifest">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <th:block th:if="${umamiScriptUrl != null and !umamiScriptUrl.isEmpty() and umamiWebsiteId != null and !umamiWebsiteId.isEmpty()}">
+        <script defer="defer" th:src="${umamiScriptUrl}" th:attr="data-website-id=${umamiWebsiteId}"></script>
+    </th:block>
+</head>
+<body class="site-shell">
+<main class="site-container py-4 py-md-5">
+    <header class="site-header">
+        <a class="brand-mark" href="/">
+            <img class="brand-icon" src="/icon/favicon.svg" alt="" aria-hidden="true">
+            Devzao
+        </a>
+        <a class="btn btn-sm btn-outline-secondary rounded-pill px-3" href="/random">Random profile</a>
+        <a class="btn btn-sm btn-outline-dark rounded-pill px-3" href="/">Search another</a>
+    </header>
+
+    <article class="editorial-card profile-card">
+        <div class="profile-layout">
+            <aside>
+                <div class="profile-avatar avatar-placeholder">
+                    <span class="loading-dot"></span>
+                </div>
+            </aside>
+
+            <section>
+                <p class="eyebrow mb-3">Preparing profile</p>
+                <h1 class="profile-title mb-3" th:text="${login}">login</h1>
+                <div class="skeleton-line skeleton-line-lg mb-3"></div>
+                <p class="profile-subtitle mb-4">Contacting GitHub and building the first profile snapshot.</p>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-label mb-3">Followers</div>
+                            <div class="skeleton-line skeleton-line-lg w-50"></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="stat-card">
+                            <div class="stat-label mb-3">Status</div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="loading-dot"></span>
+                                <span class="profile-subtitle">Fetching...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="note-card pt-4">
+                    <p class="mb-0">This page will update automatically when the profile is ready.</p>
+                </div>
+            </section>
+        </div>
+    </article>
+
+    <script th:inline="javascript">
+        const login = /*[[${login}]]*/ "";
+        const pollEveryMs = 2000;
+
+        async function poll() {
+            try {
+                const response = await fetch(`/u/${encodeURIComponent(login)}/status`, {
+                    headers: { "Accept": "application/json" }
+                });
+                const status = await response.json();
+
+                if (status.state === "FETCHED") {
+                    const canonical = status.canonicalLogin || login;
+                    if (canonical !== login) {
+                        window.location.href = `/u/${encodeURIComponent(canonical)}`;
+                        return;
+                    }
+                    window.location.reload();
+                    return;
+                }
+
+                if (status.state === "NOT_FOUND" || status.state === "FAILED") {
+                    const msg = status.message;
+                    const attempted = status.attemptedLogin || login;
+                    window.location.href = `/?message=${encodeURIComponent(msg)}&login=${encodeURIComponent(attempted)}`;
+                    return;
+                }
+            } catch (e) {
+                // swallow and retry
+            }
+
+            setTimeout(poll, pollEveryMs);
+        }
+
+        setTimeout(poll, pollEveryMs);
+    </script>
+</main>
+<footer class="site-footer">
+    <a href="https://github.com/vitallan/devzao" target="_blank" rel="noopener noreferrer">vitallan/devzao</a>
+    <span class="site-footer-note">All data is gathered from public sources on GitHub.</span><br>
+    By <a href="https://allanvital.com" target="_blank" rel="noopener noreferrer">Allan Vital</a>
+</footer>
+</body>
+</html>

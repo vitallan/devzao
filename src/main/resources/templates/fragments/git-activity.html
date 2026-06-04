@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<section class="activity-section mb-4" id="git-activity" th:fragment="gitActivity" th:attr="data-deep-analysis-status=${deepAnalysisStatus}">
+    <div class="d-flex align-items-center justify-content-between gap-3 mb-3">
+        <h2 class="section-title mb-0">Commit activity</h2>
+        <span class="field-label">Git</span>
+    </div>
+
+    <div th:if="${deepAnalysisStatus == 'COMPLETED' and monthlyActivities != null and !monthlyActivities.isEmpty()}">
+        <div class="activity-charts">
+            <div class="chart-group">
+                <h3 class="chart-title">Commits per month</h3>
+                <div class="bar-chart monthly-chart">
+                    <div class="bar-column" th:each="activity : ${monthlyActivities}">
+                        <div class="bar-space">
+                            <div class="bar" th:style="'flex: 0 0 ' + ${activity.percentage()} + '%'" th:attr="title=${activity.commitCount() + ' commits in ' + activity.yearMonth()}"></div>
+                        </div>
+                        <span class="bar-value" th:text="${activity.displayCommitCount()}">0</span>
+                        <div class="bar-label" th:text="${activity.label()}">Jan</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-group" th:if="${hourlyActivities != null and !hourlyActivities.isEmpty()}">
+                <h3 class="chart-title">Preferred Committing Hour (24h)</h3>
+                <div class="bar-chart hourly-chart">
+                    <div class="bar-column" th:each="activity : ${hourlyActivities}">
+                        <div class="bar-space">
+                            <div class="bar" th:style="'flex: 0 0 ' + ${activity.percentage()} + '%'" th:attr="title=${activity.commitCount() + ' commits at ' + activity.label()}"></div>
+                        </div>
+                        <span class="bar-value" th:text="${activity.displayCommitCount()}">0</span>
+                        <div class="bar-label" th:text="${activity.hour()}">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-group" th:if="${weekdayActivities != null and !weekdayActivities.isEmpty()}">
+                <h3 class="chart-title">Preferred Committing Day of the Week</h3>
+                <div class="bar-chart weekday-chart">
+                    <div class="bar-column" th:each="activity : ${weekdayActivities}">
+                        <div class="bar-space">
+                            <div class="bar" th:style="'flex: 0 0 ' + ${activity.percentage()} + '%'" th:attr="title=${activity.commitCount() + ' commits on ' + activity.dayLabel()}"></div>
+                        </div>
+                        <span class="bar-value" th:text="${activity.displayCommitCount()}">0</span>
+                        <div class="bar-label" th:text="${activity.dayLabel()}">Mon</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="activity-note" th:if="${gitAnalysis != null}">
+            Last analyzed: <span th:text="${lastAnalyzedAt}">—</span>.
+            Analysis based on the last <span th:text="${gitCloneDepth}">800</span> commits per repository.
+            <span th:if="${gitAnalysis.truncated}">Some repos may have more commits than analyzed.</span>
+        </p>
+    </div>
+
+    <p class="activity-empty mb-0" th:if="${deepAnalysisStatus == 'ANALYZING'}">
+        Commit activity is being analyzed from repository history.
+    </p>
+    <p class="activity-empty mb-0" th:if="${deepAnalysisStatus == 'NOT_STARTED'}">
+        Commit analysis is pending.
+    </p>
+    <p class="activity-empty mb-0" th:if="${deepAnalysisStatus == 'FAILED'}">
+        Commit activity could not be analyzed right now.
+    </p>
+</section>
+</body>
+</html>

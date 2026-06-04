@@ -1,0 +1,150 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-add-github-user-repository-sync
+      author: allan.vital
+      changes:
+        - addColumn:
+            tableName: github_user
+            columns:
+              - column:
+                  name: repository_sync_status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: repository_sync_token
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: repository_sync_started_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+              - column:
+                  name: repository_synced_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+
+  - changeSet:
+      id: 002-add-github-repository
+      author: allan.vital
+      changes:
+        - createTable:
+            tableName: github_repository
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: github_user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: github_repo_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: full_name
+                  type: VARCHAR(512)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(2000)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: html_url
+                  type: VARCHAR(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: clone_url
+                  type: VARCHAR(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: stargazers_count
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: forks_count
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: watchers_count
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: archived
+                  type: BOOLEAN
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+              - column:
+                  name: pushed_at
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true
+              - column:
+                  name: last_seen_sync_token
+                  type: VARCHAR(64)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: github_repository
+            columnNames: github_repo_id
+            constraintName: uk_github_repository_repo_id
+        - addForeignKeyConstraint:
+            baseTableName: github_repository
+            baseColumnNames: github_user_id
+            referencedTableName: github_user
+            referencedColumnNames: id
+            constraintName: fk_github_repository_user
+            onDelete: CASCADE
+        - createIndex:
+            tableName: github_repository
+            indexName: idx_github_repository_user_stars
+            columns:
+              - column:
+                  name: github_user_id
+              - column:
+                  name: stargazers_count
+        - createIndex:
+            tableName: github_repository
+            indexName: idx_github_repository_user_sync_token
+            columns:
+              - column:
+                  name: github_user_id
+              - column:
+                  name: last_seen_sync_token

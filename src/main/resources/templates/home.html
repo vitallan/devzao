@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>Devzao</title>
+    <link rel="stylesheet" href="/vendor/bootstrap/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/site.css"/>
+    <link rel="icon" type="image/png" sizes="96x96" href="/icon/favicon-96x96.png">
+    <link rel="icon" href="/icon/favicon.svg" type="image/svg+xml" sizes="any">
+    <link rel="icon" href="/icon/favicon.ico">
+    <link rel="apple-touch-icon" href="/icon/apple-touch-icon.png">
+    <link rel="manifest" href="/icon/site.webmanifest">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+    <th:block th:if="${umamiScriptUrl != null and !umamiScriptUrl.isEmpty() and umamiWebsiteId != null and !umamiWebsiteId.isEmpty()}">
+        <script defer="defer" th:src="${umamiScriptUrl}" th:attr="data-website-id=${umamiWebsiteId}"></script>
+    </th:block>
+</head>
+<body class="site-shell">
+<main class="site-container py-4 py-md-5">
+    <header class="site-header">
+        <a class="brand-mark" href="/">
+            <img class="brand-icon" src="/icon/favicon.svg" alt="" aria-hidden="true">
+            Devzao
+        </a>
+        <span class="eyebrow">Public GitHub profile</span>
+    </header>
+
+    <section class="home-hero mb-4 mb-lg-5">
+        <div>
+            <p class="eyebrow mb-3">Developer snapshot</p>
+            <h1 class="display-title mb-4">Detailed Github Profile.</h1>
+            <p class="lead-copy mb-0">
+                Search a GitHub username and Devzao prepares a clean, shareable profile page from public data.
+            </p>
+        </div>
+    </section>
+
+    <section class="editorial-card search-card search-card-wide">
+        <div class="notice-card p-3 mb-4" th:if="${message != null}">
+            <div class="field-label mb-1" th:text="${message}">MESSAGE</div>
+            <div th:if="${login != null}">
+                Login: <span class="fw-semibold" th:text="${login}">login</span>
+            </div>
+        </div>
+
+        <form method="post" action="/search">
+            <label class="form-label mb-2" for="login">GitHub username</label>
+            <div class="row g-2 g-md-3">
+                <div class="col-12 col-md">
+                    <input class="form-control form-control-lg" id="login" name="login" type="text" autocomplete="off" placeholder="github username"/>
+                </div>
+                <div class="col-12 col-md-auto">
+                    <button class="btn btn-devzao w-100" type="submit">Search</button>
+                </div>
+            </div>
+        </form>
+
+        <div class="note-card mt-4 pt-4">
+            <p class="mb-0">
+                Uses only public GitHub profile information
+            </p>
+        </div>
+    </section>
+</main>
+<footer class="site-footer">
+    <a href="https://github.com/vitallan/devzao" target="_blank" rel="noopener noreferrer">vitallan/devzao</a>
+    <span class="site-footer-note">All data is gathered from public sources on GitHub.</span><br>
+    By <a href="https://allanvital.com" target="_blank" rel="noopener noreferrer">Allan Vital</a>
+</footer>
+</body>
+</html>

@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-repo-commit-count
+      author: allanvital
+      changes:
+        - addColumn:
+            tableName: github_repository
+            columns:
+              - column:
+                  name: commit_count
+                  type: INT
+                  constraints:
+                    nullable: true
