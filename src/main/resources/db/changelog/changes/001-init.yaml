@@ -83,7 +83,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: photo_blob
-                  type: BLOB
+                  type: MEDIUMBLOB
                   constraints:
                     nullable: false
               - column:
