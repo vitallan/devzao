@@ -72,7 +72,7 @@ public class NewUserTest extends E2ETest {
                 .andExpect(view().name("user-fetching"))
                 .andExpect(status().isOk());
 
-        waitUntilFetched(login, USER_TIMEOUT);
+        waitUntilFetchedWithPhoto(login, USER_TIMEOUT);
 
         this.mockMvc.perform(get(url))
                 .andExpect(model().attribute("login", login))
@@ -165,17 +165,14 @@ public class NewUserTest extends E2ETest {
     @Test
     public void shouldExposeStatusTransitionFromNewToFetched() throws Exception {
         String login = STATUS_INFO.login();
-        long retryAfterEpochMillis = Instant.now().plus(Duration.ofMinutes(10)).toEpochMilli();
-        this.fakeGitHubClient.setUserRateLimited(login, retryAfterEpochMillis);
+        configureSuccess(login, STATUS_INFO);
 
         this.mockMvc.perform(get("/u/" + login + "/status"))
                 .andExpect(jsonPath("$.state").value(GitHubUserStatus.NEW.name()))
                 .andExpect(jsonPath("$.attemptedLogin").value(login))
                 .andExpect(status().isOk());
 
-        configureSuccess(login, STATUS_INFO);
-
-        waitUntilFetched(login, USER_TIMEOUT);
+        waitUntilFetchedWithPhoto(login, USER_TIMEOUT);
 
         this.mockMvc.perform(get("/u/" + login + "/status"))
                 .andExpect(jsonPath("$.state").value(GitHubUserStatus.FETCHED.name()))
@@ -194,7 +191,7 @@ public class NewUserTest extends E2ETest {
                 .andExpect(view().name("user-fetching"))
                 .andExpect(status().isOk());
 
-        waitUntilFetched(login, USER_TIMEOUT);
+        waitUntilFetchedWithPhoto(login, USER_TIMEOUT);
 
         this.mockMvc.perform(get("/u/" + login))
                 .andExpect(model().attribute("login", login))

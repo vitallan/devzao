@@ -1,6 +1,7 @@
 package com.allanvital.devzao.workflow;
 
 import com.allanvital.devzao.domain.GitHubUser;
+import com.allanvital.devzao.domain.GitHubUserPhoto;
 import com.allanvital.devzao.domain.GitHubRepositoryRepository;
 import com.allanvital.devzao.domain.GitHubRepositorySyncStatus;
 import com.allanvital.devzao.domain.GitHubUserPhotoRepository;
@@ -59,6 +60,22 @@ public abstract class E2ETest {
 
     protected void waitUntilFetched(String username, Duration timeout) {
         waitUntilStatus(username, timeout, GitHubUserStatus.FETCHED);
+    }
+
+    protected void waitUntilFetchedWithPhoto(String username, Duration timeout) {
+        long sleepTime = 100L;
+        Instant timeoutAt = Instant.now().plus(timeout);
+        do {
+            Optional<GitHubUser> userOpt = gitHubUserRepository.findByLoginLower(username.toLowerCase());
+            if (userOpt.isPresent() && userOpt.get().getStatus() == GitHubUserStatus.FETCHED) {
+                Optional<GitHubUserPhoto> photoOpt = gitHubUserPhotoRepository.findByGitHubUserId(userOpt.get().getId());
+                if (photoOpt.isPresent()) {
+                    return;
+                }
+            }
+            sleep(sleepTime);
+        } while (Instant.now().isBefore(timeoutAt));
+        fail("user " + username + " did not reach FETCHED with photo in time");
     }
 
     protected void waitUntilNotFound(String username, Duration timeout) {
